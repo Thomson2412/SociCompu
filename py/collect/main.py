@@ -9,7 +9,7 @@ from aggregate import aggregate
 
 def main(arguments):
     if arguments[1] == 'standard' or arguments[1] == 'premium':
-        query_base = 'air (quality OR pollution OR pollutants OR PM10 OR NO2 OR CO2 OR PM25) lang:en'
+        query_base = 'air (quality OR pollution OR pollutants OR PM10 OR NO2 OR CO2 OR PM25) -is:retweet lang:en'
 
         base_url = 'https://api.twitter.com/'
         access_token = get_access_token(base_url, arguments[2], arguments[3])
