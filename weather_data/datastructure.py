@@ -2,6 +2,8 @@ import csv
 from collections import defaultdict
 import datetime
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 cities = defaultdict(list)
 cities["India"] = defaultdict(list)
@@ -12,9 +14,11 @@ files = ["waqi-covid19-airqualitydata-2019Q1.csv","waqi-covid19-airqualitydata-2
         "waqi-covid19-airqualitydata-2019Q3.csv","waqi-covid19-airqualitydata-2019Q4.csv",
         "waqi-covid19-airqualitydata-2020.csv"]
 
-required = ["no2","pm25","temperature"]
-datemin = datetime.datetime(2019, 3, 1)
+files = files + ["waqi-covid19-airqualitydata-2015H1.csv","waqi-covid19-airqualitydata-2016H1.csv","waqi-covid19-airqualitydata-2017H1.csv", "waqi-covid19-airqualitydata-2018H1.csv"]
 
+required = ["no2","pm25"]
+datemin = datetime.datetime(2019, 3, 1)
+datemin = datetime.datetime(2018, 3, 1)
 for file in files:
     stream = open(file, 'r', encoding='utf-8')
 
@@ -43,27 +47,32 @@ for file in files:
                     cities["United States"][row[2]][row[3]].append(row[0:1] + row[4:])
 
 
-#removing missing data
+#Removing missing measurement group data
 for item in list(cities):
     for city in list(cities[item]):
         if (set(required) != set(cities[item][city].keys())):
             del cities[item][city]
 
-#removing not enough dates
+#Removing data that started measuring too late                  #TODO problem, deletes all before 2019
 for item in list(cities):
     for city in list(cities[item]):
         for measure in cities[item][city]:
             if cities[item][city] == []: #error vaag
                 del cities[item][city]
                 break
-            #print(cities[item][city][measure][0][0])
-            d = cities[item][city][measure][0][0].split('-')
-            date = datetime.datetime(int(d[0]),int(d[1]),int(d[2]))
-            if date > datemin:
+            earliestdate = datetime.datetime(2020,1,1)
+            for i in range(0,len(cities[item][city][measure])):
+                d = cities[item][city][measure][i][0].split('-')
+                currdate = datetime.datetime(int(d[0]),int(d[1]),int(d[2]))
+                if currdate < earliestdate:
+                    earliestdate = currdate
+            if earliestdate > datemin:
+                print(city,earliestdate)
                 del cities[item][city]
-            #input()
 
 
+
+#Removing data before datemin
 for item in list(cities):
     for city in list(cities[item]):
         for measure in cities[item][city]:
@@ -80,8 +89,9 @@ for item in list(cities):
 for item in list(cities):
     for city in list(cities[item]):
         for var in cities[item][city]:
-            if cities[item][city][var] == []:
+            if not cities[item][city][var]:
                 del cities[item][city]
+                break
 
 
 for item in cities:
@@ -94,4 +104,47 @@ for item in cities:
     #print(item, " (", len(citylist), ") : \n", citylist,"\n--------------------------------------------------------------------------------------------------------------------")
     #input()
 
-print(cities["United States"]["Manhattan"])
+
+def plotCity(country, city, varofinterest, colorr = 'black', llinestyle = 'solid', rolling = True):
+    y_axis = [float(cities[country][city][varofinterest][i][-2]) for i in range(len(cities[country][city][varofinterest]))]
+    dates = [cities[country][city][varofinterest][i][0] for i in range(len(cities[country][city][varofinterest]))]
+    dates = [datetime.datetime.strptime(d,"%Y-%m-%d").date() for d in dates]
+    data = sorted(zip(dates,y_axis))
+    y_axis_sorted = [x for y, x in data]
+    dates_sorted = [y for y, x in data]
+
+    df = pd.DataFrame({'dates': dates_sorted, 'rolling':y_axis_sorted})
+    df['pandas_SMA_3'] = df.iloc[:,1].rolling(window=3).mean()
+    if rolling:
+        plt.plot(dates_sorted, df['pandas_SMA_3'],linestyle=llinestyle, linewidth=0.7, color = colorr)
+    else:
+        plt.plot(dates_sorted, y_axis_sorted,linestyle=llinestyle, linewidth=0.7, color = colorr)
+    plt.title(f"{city} : {varofinterest}")
+
+
+plt.figure(figsize=(20,10))
+species = "no2"
+plotCity("United States","Manhattan",species,"red","dotted")
+plotCity("India","Kolkata",species,"green","solid")
+plotCity("United Kingdom","London",species,"blue","--")
+plt.legend(["New York","Kolkata","London"])
+plt.title(f"{species} 3 days moving average")
+
+
+plt.figure(figsize=(20,10))
+species = "pm25"
+plotCity("United States","Manhattan",species,"red","dotted")
+plotCity("India","Kolkata",species,"green","solid")
+plotCity("United Kingdom","London",species,"blue","--")
+plt.legend(["New York","Kolkata","London"])
+plt.title(f"{species} 3 days moving average")
+'''
+plt.figure(figsize=(20,10))
+species = "temperature"
+plotCity("United States","Manhattan",species,"red","dotted",rolling = False)
+plotCity("India","Kolkata",species,"green","solid",rolling = False)
+plotCity("United Kingdom","London",species,"blue","--",rolling = False)
+plt.legend(["New York","Kolkata","London"])
+plt.title(f"{species} raw")
+plt.show()
+'''
