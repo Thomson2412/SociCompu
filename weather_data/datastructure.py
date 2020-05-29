@@ -19,8 +19,10 @@ files = files + ["waqi-covid19-airqualitydata-2015H1.csv","waqi-covid19-airquali
 extradata = ["delhimanual.csv","londonmanual.csv","newyorkmanual.csv"]
 
 required = ["no2","pm25"]
-datemin = datetime.datetime(2019, 3, 1)
+#datemin = datetime.datetime(2019, 3, 1)
 datemin = datetime.datetime(2015, 3, 1)
+
+#Extract all data from the big database
 for file in files:
     stream = open(file, 'r', encoding='utf-8')
 
@@ -73,7 +75,6 @@ for item in list(cities):
                 del cities[item][city]
 
 
-
 #Removing data before datemin
 for item in list(cities):
     for city in list(cities[item]):
@@ -96,7 +97,6 @@ for item in list(cities):
                 break
 
 
-
 # add manual data
 for file in extradata:
     stream = open(file, 'r', encoding='utf-8')
@@ -112,7 +112,7 @@ for file in extradata:
         entries.append([lines[i].split(',')[0].replace('/','-')] + [lines[i].split(',')[1]] + ["x"])
     cities[lines[0]][lines[1]]["pm25"] = entries
 
-
+#summarize
 for item in cities:
     citylist = []
     print("Available data for cities in : ",item)
@@ -123,7 +123,7 @@ for item in cities:
     #print(item, " (", len(citylist), ") : \n", citylist,"\n--------------------------------------------------------------------------------------------------------------------")
     #input()
 
-
+#Function to plot
 def plotCity(country, city, varofinterest, colorr = 'black', llinestyle = 'solid', rolling = True):
     y_axis = [float(cities[country][city][varofinterest][i][-2]) for i in range(len(cities[country][city][varofinterest]))]
     dates = [cities[country][city][varofinterest][i][0] for i in range(len(cities[country][city][varofinterest]))]
@@ -141,6 +141,7 @@ def plotCity(country, city, varofinterest, colorr = 'black', llinestyle = 'solid
     plt.title(f"{city} : {varofinterest}")
 
 
+#Plot NO2
 plt.figure(figsize=(20,10))
 species = "no2"
 plotCity("United States","Staten Island",species,"red","dotted")
@@ -149,7 +150,7 @@ plotCity("United Kingdom","London",species,"blue","--")
 plt.legend(["New York","Delhi","London"])
 plt.title(f"{species} 3 days moving average")
 
-
+#Plot PM2.5
 plt.figure(figsize=(20,10))
 species = "pm25"
 plotCity("United States","Staten Island(new)",species,"red","dotted")
@@ -161,7 +162,7 @@ plotCity("United Kingdom","London",species,"blue","solid")
 plt.legend(["New York (added data)","New York","Delhi (added data)","Delhi","London (added data)","London"])
 plt.title(f"{species} 3 days moving average")
 
-'''
+''' plot temperature (was for testing purposes)
 plt.figure(figsize=(20,10))
 species = "temperature"
 plotCity("United States","Manhattan",species,"red","dotted",rolling = False)
