@@ -18,7 +18,7 @@ files = files + ["waqi-covid19-airqualitydata-2015H1.csv","waqi-covid19-airquali
 
 required = ["no2","pm25"]
 datemin = datetime.datetime(2019, 3, 1)
-datemin = datetime.datetime(2018, 3, 1)
+datemin = datetime.datetime(2015, 3, 1)
 for file in files:
     stream = open(file, 'r', encoding='utf-8')
 
@@ -67,7 +67,7 @@ for item in list(cities):
                 if currdate < earliestdate:
                     earliestdate = currdate
             if earliestdate > datemin:
-                print(city,earliestdate)
+                print("removed : ",city,earliestdate)
                 del cities[item][city]
 
 
@@ -124,19 +124,27 @@ def plotCity(country, city, varofinterest, colorr = 'black', llinestyle = 'solid
 
 plt.figure(figsize=(20,10))
 species = "no2"
-plotCity("United States","Manhattan",species,"red","dotted")
-plotCity("India","Kolkata",species,"green","solid")
+plotCity("United States","Staten Island",species,"red","dotted")
+plotCity("India","Delhi",species,"green","solid")
 plotCity("United Kingdom","London",species,"blue","--")
-plt.legend(["New York","Kolkata","London"])
+plt.legend(["New York","Delhi","London"])
 plt.title(f"{species} 3 days moving average")
 
 
 plt.figure(figsize=(20,10))
 species = "pm25"
-plotCity("United States","Manhattan",species,"red","dotted")
-plotCity("India","Kolkata",species,"green","solid")
+plotCity("United States","Staten Island",species,"red","dotted")
+plotCity("India","Delhi",species,"green","solid")
 plotCity("United Kingdom","London",species,"blue","--")
-plt.legend(["New York","Kolkata","London"])
+plt.legend(["New York","Delhi","London"])
+plt.title(f"{species} 3 days moving average")
+
+plt.figure(figsize=(20,10))
+species = "so2"
+plotCity("United States","Staten Island",species,"red","dotted")
+plotCity("India","Delhi",species,"green","solid")
+plotCity("United Kingdom","London",species,"blue","--")
+plt.legend(["New York","Delhi","London"])
 plt.title(f"{species} 3 days moving average")
 
 '''
