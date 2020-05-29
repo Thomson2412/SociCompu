@@ -139,13 +139,6 @@ plotCity("United Kingdom","London",species,"blue","--")
 plt.legend(["New York","Delhi","London"])
 plt.title(f"{species} 3 days moving average")
 
-plt.figure(figsize=(20,10))
-species = "so2"
-plotCity("United States","Staten Island",species,"red","dotted")
-plotCity("India","Delhi",species,"green","solid")
-plotCity("United Kingdom","London",species,"blue","--")
-plt.legend(["New York","Delhi","London"])
-plt.title(f"{species} 3 days moving average")
 
 '''
 plt.figure(figsize=(20,10))
