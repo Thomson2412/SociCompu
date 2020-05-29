@@ -138,6 +138,7 @@ plotCity("India","Kolkata",species,"green","solid")
 plotCity("United Kingdom","London",species,"blue","--")
 plt.legend(["New York","Kolkata","London"])
 plt.title(f"{species} 3 days moving average")
+
 '''
 plt.figure(figsize=(20,10))
 species = "temperature"
@@ -146,5 +147,6 @@ plotCity("India","Kolkata",species,"green","solid",rolling = False)
 plotCity("United Kingdom","London",species,"blue","--",rolling = False)
 plt.legend(["New York","Kolkata","London"])
 plt.title(f"{species} raw")
-plt.show()
 '''
+
+plt.show()
