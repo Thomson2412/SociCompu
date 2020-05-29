@@ -16,6 +16,8 @@ files = ["waqi-covid19-airqualitydata-2019Q1.csv","waqi-covid19-airqualitydata-2
 
 files = files + ["waqi-covid19-airqualitydata-2015H1.csv","waqi-covid19-airqualitydata-2016H1.csv","waqi-covid19-airqualitydata-2017H1.csv", "waqi-covid19-airqualitydata-2018H1.csv"]
 
+extradata = ["delhimanual.csv","londonmanual.csv","newyorkmanual.csv"]
+
 required = ["no2","pm25"]
 datemin = datetime.datetime(2019, 3, 1)
 datemin = datetime.datetime(2015, 3, 1)
@@ -94,6 +96,23 @@ for item in list(cities):
                 break
 
 
+
+# add manual data
+for file in extradata:
+    stream = open(file, 'r', encoding='utf-8')
+    lines = stream.readlines()
+    lines = [line.rstrip() for line in lines]
+
+    print("\n\n--------------------------------------------------------------------------------------------------------------------\n\n".replace('-','_'),"Now analysing: ", file,"\n--------------------------------------------------------------------------------------------------------------------".replace('-','='))
+
+    cities[lines[0]][lines[1]] = defaultdict(list)
+    cities[lines[0]][lines[1]]["pm25"] = defaultdict(list)
+    entries = []
+    for i in range(2,len(lines)):
+        entries.append([lines[i].split(',')[0].replace('/','-')] + [lines[i].split(',')[1]] + ["x"])
+    cities[lines[0]][lines[1]]["pm25"] = entries
+
+
 for item in cities:
     citylist = []
     print("Available data for cities in : ",item)
@@ -133,12 +152,14 @@ plt.title(f"{species} 3 days moving average")
 
 plt.figure(figsize=(20,10))
 species = "pm25"
-plotCity("United States","Staten Island",species,"red","dotted")
+plotCity("United States","Staten Island(new)",species,"red","dotted")
+plotCity("United States","Staten Island",species,"red","solid")
+plotCity("India","Delhi(new)",species,"green","dotted")
 plotCity("India","Delhi",species,"green","solid")
-plotCity("United Kingdom","London",species,"blue","--")
-plt.legend(["New York","Delhi","London"])
+plotCity("United Kingdom","London(new)",species,"blue","dotted")
+plotCity("United Kingdom","London",species,"blue","solid")
+plt.legend(["New York (added data)","New York","Delhi (added data)","Delhi","London (added data)","London"])
 plt.title(f"{species} 3 days moving average")
-
 
 '''
 plt.figure(figsize=(20,10))
