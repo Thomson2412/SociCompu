@@ -4,6 +4,7 @@ import base64
 from datetime import datetime
 from premium import premium_search
 from standard import standard_search
+from scrape import search_twint
 from aggregate import aggregate
 
 
@@ -18,6 +19,14 @@ def main(arguments):
             search_standard_main(query_base, base_url, access_token)
         elif arguments[1] == 'premium':
             search_premium_main(query_base, base_url, access_token)
+
+    elif arguments[1] == 'twint':
+        date_format = '%Y-%m-%d'
+        query = arguments[2]
+        date_since = datetime.strptime(arguments[3], date_format)
+        date_until = datetime.strptime(arguments[4], date_format)
+        limit = int(arguments[5])
+        search_twint_main(query, date_since, date_until, limit)
 
     elif arguments[1] == 'aggregate':
         # ['results_month', 'results_long/2020', 'results_long/2019']
@@ -47,6 +56,8 @@ def search_premium_main(query_base, base_url, access_token):
     premium_search(query_base + ' place_country:gb', from_date, to_date, 8, 100, product, label, base_url, access_token)
     premium_search(query_base + ' place_country:in', from_date, to_date, 8, 100, product, label, base_url, access_token)
 
+def search_twint_main(query, date_since, date_until, limit):
+    search_twint(query, date_since, date_until, limit)
 
 def aggregate_results(dir_paths):
     aggregate(dir_paths)
